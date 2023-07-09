@@ -27,3 +27,7 @@ scrape_configs:
 
     static_configs:
       - targets: ["localhost:10090"]
+
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ['gpdash:10100']

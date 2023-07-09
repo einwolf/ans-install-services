@@ -60,3 +60,7 @@
       ansible.builtin.include_role:
         name: setup-gpdashboard
         tasks_from: install-node-exporter.yaml
+    - name: Include install-grafana
+      ansible.builtin.include_role:
+        name: setup-gpdashboard
+        tasks_from: install-grafana.yaml
