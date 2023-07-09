@@ -1,0 +1,74 @@
+---
+# Cockpit and Prometheus use port 9090 by default
+- name: Disable cockpit.service
+  ansible.builtin.systemd:
+    name: cockpit.service
+    state: stopped
+    enabled: false
+- name: Disable cockpit.socket
+  ansible.builtin.systemd:
+    name: cockpit.socket
+    state: stopped
+    enabled: false
+- name: Make prometheus group
+  ansible.builtin.group:
+    name: prometheus
+    state: present
+- name: Make prometheus user
+  ansible.builtin.user:
+    name: prometheus
+    state: present
+    group: prometheus
+    shell: /bin/false
+- name: Get Prometheus tar.gz
+  ansible.builtin.get_url:
+    url: "{{ prometheus_url }}"
+    dest: "{{ prometheus_local_tar }}"
+    owner: prometheus
+    group: prometheus
+    mode: "0664"
+- name: "Delete {{ prometheus_dir }} dir"
+  ansible.builtin.file:
+    state: absent
+    path: "{{ prometheus_dir }}"
+- name: "Create {{ prometheus_dir }} dir"
+  ansible.builtin.file:
+    state: directory
+    path: "{{ prometheus_dir }}"
+    owner: prometheus
+    group: prometheus
+    mode: "0775"
+- name: Unarchive Prometheus tar.gz
+  ansible.builtin.unarchive:
+    src: "{{ prometheus_local_tar }}"
+    dest: /opt
+    remote_src: true
+    owner: prometheus
+    group: prometheus
+- name: Create /opt/prometheus link
+  ansible.builtin.file:
+    state: link
+    path: /opt/prometheus
+    src: "{{ prometheus_dir }}"
+- name: Copy prometheus.yml to /etc
+  ansible.builtin.copy:
+    src: etc/prometheus.yml
+    dest: /etc/prometheus.yml
+    owner: prometheus
+    group: prometheus
+    mode: "0554"
+- name: Copy prometheus.service to /etc
+  ansible.builtin.copy:
+    src: etc/systemd/system/prometheus.service
+    dest: /etc/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: "0664"
+- name: systemctl daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+- name: Start prometheus
+  ansible.builtin.service:
+    name: prometheus
+    state: started
+    enabled: true

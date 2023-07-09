@@ -1,0 +1,31 @@
+---
+- name: Install Prometheus
+  hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    prometheus_url: "https://github.com/prometheus/prometheus/releases/download/v2.45.0/prometheus-2.45.0.linux-amd64.tar.gz"
+    prometheus_local_tar: "/opt/{{ prometheus_url | basename }}"
+    prometheus_dir: "/opt/{{ prometheus_url[:-7] | basename }}"
+  tasks:
+    - name: Print prometheus_url
+      debug:
+        msg: "{{ prometheus_url }}"
+        verbosity: 1
+    - name: Print prometheus_local_tar
+      debug:
+        msg: "{{ prometheus_local_tar }}"
+        verbosity: 1
+    - name: Print prometheus_dir
+      debug:
+        msg: "{{ prometheus_dir }}"
+        verbosity: 1
+    - name: Disable firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: stopped
+        enabled: false
+    - name: Include install-prometheus
+      ansible.builtin.include_role:
+        name: setup-gpdashboard
+        tasks_from: install-prometheus.yaml
