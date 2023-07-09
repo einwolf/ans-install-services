@@ -1,15 +1,4 @@
 ---
-# Cockpit and Prometheus use port 9090 by default
-- name: Disable cockpit.service
-  ansible.builtin.systemd:
-    name: cockpit.service
-    state: stopped
-    enabled: false
-- name: Disable cockpit.socket
-  ansible.builtin.systemd:
-    name: cockpit.socket
-    state: stopped
-    enabled: false
 - name: Make prometheus group
   ansible.builtin.group:
     name: prometheus
@@ -19,7 +8,7 @@
     name: prometheus
     state: present
     group: prometheus
-    shell: /bin/false
+    shell: /sbin/nologin
 - name: Get Prometheus tar.gz
   ansible.builtin.get_url:
     url: "{{ prometheus_url }}"

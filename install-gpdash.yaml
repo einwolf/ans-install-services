@@ -7,6 +7,9 @@
     prometheus_url: "https://github.com/prometheus/prometheus/releases/download/v2.45.0/prometheus-2.45.0.linux-amd64.tar.gz"
     prometheus_local_tar: "/opt/{{ prometheus_url | basename }}"
     prometheus_dir: "/opt/{{ prometheus_url[:-7] | basename }}"
+    nodeexporter_url: "https://github.com/prometheus/node_exporter/releases/download/v1.6.0/node_exporter-1.6.0.linux-amd64.tar.gz"
+    nodeexporter_local_tar: "/opt/{{ nodeexporter_url | basename }}"
+    nodeexporter_dir: "/opt/{{ nodeexporter_url[:-7] | basename }}"
   tasks:
     - name: Print prometheus_url
       debug:
@@ -20,12 +23,40 @@
       debug:
         msg: "{{ prometheus_dir }}"
         verbosity: 1
+    - name: Print nodeexporter_url
+      debug:
+        msg: "{{ nodeexporter_url }}"
+        verbosity: 1
+    - name: Print nodeexporter_local_tar
+      debug:
+        msg: "{{ nodeexporter_local_tar }}"
+        verbosity: 1
+    - name: Print nodeexporter_dir
+      debug:
+        msg: "{{ nodeexporter_dir }}"
+        verbosity: 1
+
     - name: Disable firewalld
       ansible.builtin.service:
         name: firewalld
+        state: stopped
+        enabled: false
+    # Cockpit and Prometheus use port 9090 by default
+    - name: Disable cockpit.service
+      ansible.builtin.systemd:
+        name: cockpit.service
+        state: stopped
+        enabled: false
+    - name: Disable cockpit.socket
+      ansible.builtin.systemd:
+        name: cockpit.socket
         state: stopped
         enabled: false
     - name: Include install-prometheus
       ansible.builtin.include_role:
         name: setup-gpdashboard
         tasks_from: install-prometheus.yaml
+    - name: Include install-node-exporter
+      ansible.builtin.include_role:
+        name: setup-gpdashboard
+        tasks_from: install-node-exporter.yaml

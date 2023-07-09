@@ -1,0 +1,70 @@
+---
+- name: Make node_exporter group
+  ansible.builtin.group:
+    name: node_exporter
+    state: present
+- name: Make node_exporter user
+  ansible.builtin.user:
+    name: node_exporter
+    state: present
+    group: node_exporter
+    shell: /sbin/nologin
+- name: Get node_exporter tar.gz
+  ansible.builtin.get_url:
+    url: "{{ nodeexporter_url }}"
+    dest: "{{ nodeexporter_local_tar }}"
+    owner: node_exporter
+    group: node_exporter
+    mode: "0664"
+- name: "Delete {{ nodeexporter_dir }} dir"
+  ansible.builtin.file:
+    state: absent
+    path: "{{ nodeexporter_dir }}"
+- name: "Create {{ nodeexporter_dir }} dir"
+  ansible.builtin.file:
+    state: directory
+    path: "{{ nodeexporter_dir }}"
+    owner: node_exporter
+    group: node_exporter
+    mode: "0775"
+- name: Unarchive node_exporter tar.gz
+  ansible.builtin.unarchive:
+    src: "{{ nodeexporter_local_tar }}"
+    dest: /opt
+    remote_src: true
+    owner: node_exporter
+    group: node_exporter
+- name: Create /opt/node_exporter link
+  ansible.builtin.file:
+    state: link
+    path: /opt/node_exporter
+    src: "{{ nodeexporter_dir }}"
+- name: Create /etc/sysconfig/node_exporter
+  ansible.builtin.copy:
+    src: etc/sysconfig/node_exporter
+    dest: /etc/sysconfig/node_exporter
+    owner: node_exporter
+    group: node_exporter
+    mode: "0664"
+- name: Create /var/lib/node_exporter/textfile_collector
+  ansible.builtin.file:
+    state: directory
+    dest: /var/lib/node_exporter/textfile_collector
+    owner: node_exporter
+    group: node_exporter
+    mode: "0775"
+- name: Copy node_exporter.service to /etc
+  ansible.builtin.copy:
+    src: etc/systemd/system/node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: "0664"
+- name: systemctl daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+- name: Start node_exporter
+  ansible.builtin.service:
+    name: node_exporter
+    state: started
+    enabled: true
