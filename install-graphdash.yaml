@@ -4,6 +4,7 @@
   gather_facts: true
   become: true
   vars_files:
+    - vars/vars_vault.yaml
     - vars/package_urls.yaml
   vars:
     prometheus_local_tar: "/opt/{{ prometheus_url | basename }}"
@@ -41,25 +42,28 @@
         name: firewalld
         state: stopped
         enabled: false
-    # Cockpit and Prometheus use port 9090 by default
+    # Cockpit and Prometheus use port 9090 by default.
+    # Prometheus has been configured to use port 10090.
     - name: Disable cockpit.service
       ansible.builtin.systemd:
         name: cockpit.service
         state: stopped
         enabled: false
+      failed_when: false
     - name: Disable cockpit.socket
       ansible.builtin.systemd:
         name: cockpit.socket
         state: stopped
         enabled: false
-    - name: Include install-prometheus
-      ansible.builtin.include_role:
-        name: setup-gpdashboard
-        tasks_from: install-prometheus.yaml
+      failed_when: false
     - name: Include install-node-exporter
       ansible.builtin.include_role:
         name: setup-gpdashboard
         tasks_from: install-node-exporter.yaml
+    - name: Include install-prometheus
+      ansible.builtin.include_role:
+        name: setup-gpdashboard
+        tasks_from: install-prometheus.yaml
     - name: Include install-grafana
       ansible.builtin.include_role:
         name: setup-gpdashboard

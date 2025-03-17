@@ -39,10 +39,10 @@
     state: link
     path: /opt/prometheus
     src: "{{ prometheus_dir }}"
-- name: Copy prometheus.yml to /etc
+- name: Copy prometheus.yaml to /etc
   ansible.builtin.copy:
-    src: etc/prometheus.yml
-    dest: /etc/prometheus.yml
+    src: etc/prometheus.yaml
+    dest: /etc/prometheus.yaml
     owner: prometheus
     group: prometheus
     mode: "0554"

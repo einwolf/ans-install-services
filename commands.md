@@ -3,13 +3,14 @@
 Install various services
 
 ```bash
-ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -v ping.yaml -l ne_clients
+ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -v ping.yaml -l dashboard,ne_clients
 ```
 
 ## Grafana with Prometheus
 
 ```bash
-reset && ansible-playbook -v -l gpdash install-gpdash.yaml -b -k -K
+reset && ansible-playbook -v install-graphdash.yaml -b -k -K
+reset && ansible-playbook -v install-graphdash.yaml -l graphdash
 ```
 
 ## Monitors

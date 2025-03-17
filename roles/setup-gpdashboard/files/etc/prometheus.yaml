@@ -30,4 +30,4 @@ scrape_configs:
 
   - job_name: "node_exporter"
     static_configs:
-      - targets: ['gpdash:10100']
+      - targets: ["graphdash:10100"]
