@@ -1,5 +1,11 @@
-# port 10100
+# Uses port 10100
 ---
+- name: Stop node_exporter
+  ansible.builtin.service:
+    name: node_exporter
+    state: stopped
+    enabled: false
+  failed_when: false
 - name: Make node_exporter group
   ansible.builtin.group:
     name: node_exporter
@@ -9,7 +15,9 @@
     name: node_exporter
     state: present
     group: node_exporter
+    create_home: false
     shell: /sbin/nologin
+    password: "*"
 - name: Get node_exporter tar.gz
   ansible.builtin.get_url:
     url: "{{ nodeexporter_url }}"
@@ -67,5 +75,5 @@
 - name: Start node_exporter
   ansible.builtin.service:
     name: node_exporter
-    state: started
+    state: restarted
     enabled: true

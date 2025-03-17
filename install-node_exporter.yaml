@@ -3,11 +3,10 @@
   hosts: all
   gather_facts: true
   become: true
+  vars_files:
+    - vars/vars_vault.yaml
+    - vars/package_urls.yaml
   vars:
-    prometheus_url: "https://github.com/prometheus/prometheus/releases/download/v2.45.0/prometheus-2.45.0.linux-amd64.tar.gz"
-    prometheus_local_tar: "/opt/{{ prometheus_url | basename }}"
-    prometheus_dir: "/opt/{{ prometheus_url[:-7] | basename }}"
-    nodeexporter_url: "https://github.com/prometheus/node_exporter/releases/download/v1.6.0/node_exporter-1.6.0.linux-amd64.tar.gz"
     nodeexporter_local_tar: "/opt/{{ nodeexporter_url | basename }}"
     nodeexporter_dir: "/opt/{{ nodeexporter_url[:-7] | basename }}"
   tasks:
