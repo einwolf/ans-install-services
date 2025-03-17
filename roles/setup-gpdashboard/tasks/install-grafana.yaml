@@ -8,6 +8,12 @@
     owner: root
     group: root
     mode: "0664"
+- name: Stop Grafana
+  ansible.builtin.service:
+    name: grafana-server
+    state: stopped
+    enabled: false
+  failed_when: false
 - name: Install Grafana
   ansible.builtin.package:
     name: grafana

@@ -10,6 +10,7 @@ Type=simple
 ExecStart=/opt/prometheus/prometheus \
     --config.file /etc/prometheus.yaml \
     --storage.tsdb.path /opt/prometheus/data/ \
+    --log.level=debug \
     --web.console.templates=/opt/prometheus/consoles \
     --web.console.libraries=/opt/prometheus/console_libraries \
     --web.enable-admin-api \
